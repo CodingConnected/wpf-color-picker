@@ -4,66 +4,65 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Dsafa.WpfColorPicker
+namespace CodingConnected.WpfColorPicker;
+
+internal abstract class SliderPicker : UserControl
 {
-    internal abstract class SliderPicker : UserControl
+    private readonly SliderPickerAdorner _adorner;
+
+    protected SliderPicker()
     {
-        private readonly SliderPickerAdorner _adorner;
+        _adorner = new SliderPickerAdorner(this);
+        Loaded += PickerOnLoaded;
+    }
 
-        protected SliderPicker()
+    protected Color AdornerColor
+    {
+        get => _adorner.Color;
+        set => _adorner.Color = value;
+    }
+
+    protected double AdornerVerticalPercent
+    {
+        get => _adorner.VerticalPercent;
+        set => _adorner.VerticalPercent = value;
+    }
+
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+        base.OnMouseMove(e);
+
+        if (e.LeftButton != MouseButtonState.Pressed)
         {
-            _adorner = new SliderPickerAdorner(this);
-            Loaded += PickerOnLoaded;
+            return;
         }
 
-        protected Color AdornerColor
-        {
-            get => _adorner.Color;
-            set => _adorner.Color = value;
-        }
+        Mouse.Capture(this);
 
-        protected double AdornerVerticalPercent
-        {
-            get => _adorner.VerticalPercent;
-            set => _adorner.VerticalPercent = value;
-        }
+        UpdateAdorner(e.GetPosition(this).Clamp(this));
+    }
 
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            base.OnMouseMove(e);
+    protected override void OnMouseUp(MouseButtonEventArgs e)
+    {
+        base.OnMouseUp(e);
+        Mouse.Capture(null);
+        UpdateAdorner(e.GetPosition(this).Clamp(this));
+    }
 
-            if (e.LeftButton != MouseButtonState.Pressed)
-            {
-                return;
-            }
+    protected virtual void OnAdornerPositionChanged(double verticalPercent)
+    {
+    }
 
-            Mouse.Capture(this);
+    private void UpdateAdorner(Point mousePos)
+    {
+        double verticalPercent = mousePos.Y / ActualHeight;
+        _adorner.VerticalPercent = verticalPercent;
+        OnAdornerPositionChanged(verticalPercent);
+    }
 
-            UpdateAdorner(e.GetPosition(this).Clamp(this));
-        }
-
-        protected override void OnMouseUp(MouseButtonEventArgs e)
-        {
-            base.OnMouseUp(e);
-            Mouse.Capture(null);
-            UpdateAdorner(e.GetPosition(this).Clamp(this));
-        }
-
-        protected virtual void OnAdornerPositionChanged(double verticalPercent)
-        {
-        }
-
-        private void UpdateAdorner(Point mousePos)
-        {
-            double verticalPercent = mousePos.Y / ActualHeight;
-            _adorner.VerticalPercent = verticalPercent;
-            OnAdornerPositionChanged(verticalPercent);
-        }
-
-        private void PickerOnLoaded(object sender, RoutedEventArgs e)
-        {
-            _adorner.ElementSize = new Rect(new Size(ActualWidth, ActualHeight));
-            AdornerLayer.GetAdornerLayer(this).Add(_adorner);
-        }
+    private void PickerOnLoaded(object sender, RoutedEventArgs e)
+    {
+        _adorner.ElementSize = new Rect(new Size(ActualWidth, ActualHeight));
+        AdornerLayer.GetAdornerLayer(this).Add(_adorner);
     }
 }

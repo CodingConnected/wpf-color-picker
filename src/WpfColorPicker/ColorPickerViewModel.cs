@@ -2,247 +2,246 @@
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
 
-namespace Dsafa.WpfColorPicker
+namespace CodingConnected.WpfColorPicker;
+
+internal class ColorPickerViewModel : INotifyPropertyChanged
 {
-    internal class ColorPickerViewModel : INotifyPropertyChanged
+    private Color _color = Colors.Red;
+    private Color _oldColor = Colors.Red;
+    private double _hue;
+    private double _saturation = 1;
+    private double _brightness = 1;
+    private byte _red;
+    private byte _green;
+    private byte _blue;
+    private byte _alpha = 255;
+    private bool _dirty;
+    // flags to prevent circular updates
+    private bool _updateFromColor = false;
+    private bool _updateFromComponents = false;
+
+    public Color Color
     {
-        private Color _color = Colors.Red;
-        private Color _oldColor = Colors.Red;
-        private double _hue;
-        private double _saturation = 1;
-        private double _brightness = 1;
-        private byte _red;
-        private byte _green;
-        private byte _blue;
-        private byte _alpha = 255;
-        private bool _dirty;
-        // flags to prevent circular updates
-        private bool _updateFromColor = false;
-        private bool _updateFromComponents = false;
-
-        public Color Color
+        get => _color;
+        set
         {
-            get => _color;
-            set
+            if (value == _color)
             {
-                if (value == _color)
-                {
-                    return;
-                }
+                return;
+            }
 
-                _color = value;
-                OnPropertyChanged();
+            _color = value;
+            OnPropertyChanged();
 
-                if (!_updateFromComponents)
-                {
-                    UpdateComponents();
-                }
+            if (!_updateFromComponents)
+            {
+                UpdateComponents();
             }
         }
+    }
 
-        public Color OldColor
+    public Color OldColor
+    {
+        get => _oldColor;
+        set
         {
-            get => _oldColor;
-            set
+            if (value == _oldColor || _dirty)
             {
-                if (value == _oldColor || _dirty)
-                {
-                    return;
-                }
+                return;
+            }
 
-                _oldColor = value;
-                OnPropertyChanged();
-                _dirty = true;
+            _oldColor = value;
+            OnPropertyChanged();
+            _dirty = true;
+        }
+    }
+
+    public double Hue
+    {
+        get => _hue;
+        set
+        {
+            if (value == _hue)
+            {
+                return;
+            }
+
+            _hue = value;
+            OnPropertyChanged();
+
+            if (!_updateFromColor && !_updateFromComponents)
+            {
+                UpdateColorFromHSB();
             }
         }
+    }
 
-        public double Hue
+    public double Saturation
+    {
+        get => _saturation;
+        set
         {
-            get => _hue;
-            set
+            if (value == _saturation)
             {
-                if (value == _hue)
-                {
-                    return;
-                }
+                return;
+            }
 
-                _hue = value;
-                OnPropertyChanged();
+            _saturation = value;
+            OnPropertyChanged();
 
-                if (!_updateFromColor && !_updateFromComponents)
-                {
-                    UpdateColorFromHSB();
-                }
+            if (!_updateFromColor && !_updateFromComponents)
+            {
+                UpdateColorFromHSB();
             }
         }
+    }
 
-        public double Saturation
+    public double Brightness
+    {
+        get => _brightness;
+        set
         {
-            get => _saturation;
-            set
+            if (value == _brightness)
             {
-                if (value == _saturation)
-                {
-                    return;
-                }
+                return;
+            }
 
-                _saturation = value;
-                OnPropertyChanged();
+            _brightness = value;
+            OnPropertyChanged();
 
-                if (!_updateFromColor && !_updateFromComponents)
-                {
-                    UpdateColorFromHSB();
-                }
+            if (!_updateFromColor && !_updateFromComponents)
+            {
+                UpdateColorFromHSB();
             }
         }
+    }
 
-        public double Brightness
+    public byte Red
+    {
+        get => _red;
+        set
         {
-            get => _brightness;
-            set
+            if (value == _red)
             {
-                if (value == _brightness)
-                {
-                    return;
-                }
+                return;
+            }
 
-                _brightness = value;
-                OnPropertyChanged();
+            _red = value;
+            OnPropertyChanged();
 
-                if (!_updateFromColor && !_updateFromComponents)
-                {
-                    UpdateColorFromHSB();
-                }
+            if (!_updateFromColor && !_updateFromComponents)
+            {
+                UpdateColorFromRGB();
             }
         }
+    }
 
-        public byte Red
+    public byte Green
+    {
+        get => _green;
+        set
         {
-            get => _red;
-            set
+            if (value == _green)
             {
-                if (value == _red)
-                {
-                    return;
-                }
+                return;
+            }
 
-                _red = value;
-                OnPropertyChanged();
+            _green = value;
+            OnPropertyChanged();
 
-                if (!_updateFromColor && !_updateFromComponents)
-                {
-                    UpdateColorFromRGB();
-                }
+            if (!_updateFromColor && !_updateFromComponents)
+            {
+                UpdateColorFromRGB();
             }
         }
+    }
 
-        public byte Green
+    public byte Blue
+    {
+        get => _blue;
+        set
         {
-            get => _green;
-            set
+            if (value == _blue)
             {
-                if (value == _green)
-                {
-                    return;
-                }
+                return;
+            }
 
-                _green = value;
-                OnPropertyChanged();
+            _blue = value;
+            OnPropertyChanged();
 
-                if (!_updateFromColor && !_updateFromComponents)
-                {
-                    UpdateColorFromRGB();
-                }
+            if (!_updateFromColor && !_updateFromComponents)
+            {
+                UpdateColorFromRGB();
             }
         }
+    }
 
-        public byte Blue
+    public byte Alpha
+    {
+        get => _alpha;
+        set
         {
-            get => _blue;
-            set
+            if (value == _alpha)
             {
-                if (value == _blue)
-                {
-                    return;
-                }
+                return;
+            }
 
-                _blue = value;
-                OnPropertyChanged();
-
-                if (!_updateFromColor && !_updateFromComponents)
-                {
-                    UpdateColorFromRGB();
-                }
+            _alpha = value;
+            OnPropertyChanged();
+            
+            if (!_updateFromColor && !_updateFromComponents)
+            {
+                UpdateColorFromRGB();
             }
         }
+    }
 
-        public byte Alpha
-        {
-            get => _alpha;
-            set
-            {
-                if (value == _alpha)
-                {
-                    return;
-                }
+    public event PropertyChangedEventHandler PropertyChanged;
 
-                _alpha = value;
-                OnPropertyChanged();
-                
-                if (!_updateFromColor && !_updateFromComponents)
-                {
-                    UpdateColorFromRGB();
-                }
-            }
-        }
+    private void OnPropertyChanged([CallerMemberName] string caller = "")
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(caller));
+    }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+    private void UpdateColorFromRGB()
+    {
+        // when rgb changes, update hsb
+        _updateFromComponents = true;
+        Color = Color.FromArgb(Alpha, Red, Green, Blue);
+        Hue = Color.GetHue();
+        Saturation = Color.GetSaturation();
+        Brightness = Color.GetBrightness();
+        _updateFromComponents = false;
+    }
 
-        private void OnPropertyChanged([CallerMemberName] string caller = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(caller));
-        }
+    private void UpdateColorFromHSB()
+    {
+        // when hsb changes, update rgb
+        _updateFromComponents = true;
+        var c = ColorHelper.FromHSV(Hue, Saturation, Brightness);
+        c.A = Alpha;
 
-        private void UpdateColorFromRGB()
-        {
-            // when rgb changes, update hsb
-            _updateFromComponents = true;
-            Color = Color.FromArgb(Alpha, Red, Green, Blue);
-            Hue = Color.GetHue();
-            Saturation = Color.GetSaturation();
-            Brightness = Color.GetBrightness();
-            _updateFromComponents = false;
-        }
+        Color = c;
+        Red = Color.R;
+        Green = Color.G;
+        Blue = Color.B;
+        _updateFromComponents = false;
+    }
 
-        private void UpdateColorFromHSB()
-        {
-            // when hsb changes, update rgb
-            _updateFromComponents = true;
-            var c = ColorHelper.FromHSV(Hue, Saturation, Brightness);
-            c.A = Alpha;
+    private void UpdateComponents()
+    {
+        // when color changes, update hsb and rgb
+        _updateFromColor = true;
 
-            Color = c;
-            Red = Color.R;
-            Green = Color.G;
-            Blue = Color.B;
-            _updateFromComponents = false;
-        }
+        Red = Color.R;
+        Green = Color.G;
+        Blue = Color.B;
+        Alpha = Color.A;
 
-        private void UpdateComponents()
-        {
-            // when color changes, update hsb and rgb
-            _updateFromColor = true;
+        Hue = Color.GetHue();
+        Saturation = Color.GetSaturation();
+        Brightness = Color.GetBrightness();
 
-            Red = Color.R;
-            Green = Color.G;
-            Blue = Color.B;
-            Alpha = Color.A;
-
-            Hue = Color.GetHue();
-            Saturation = Color.GetSaturation();
-            Brightness = Color.GetBrightness();
-
-            _updateFromColor = false;
-        }
+        _updateFromColor = false;
     }
 }

@@ -1,4 +1,4 @@
-﻿using Dsafa.WpfColorPicker;
+﻿using CodingConnected.WpfColorPicker;
 using System;
 using System.Collections;
 using System.Collections.Generic;

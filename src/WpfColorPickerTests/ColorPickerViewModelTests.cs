@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Dsafa.WpfColorPicker;
+using CodingConnected.WpfColorPicker;
 using System.Windows.Media;
 
 
